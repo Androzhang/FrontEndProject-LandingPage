@@ -20,7 +20,6 @@
 const navElement = document.querySelectorAll('section');
 const navBar = document.getElementById('navbar__list');
 
-
 // build the nav
 navElement.forEach (function(e) {
    const navbarItem = 
@@ -38,3 +37,37 @@ navBar.addEventListener('click',function(l) {
     elementToScrollTo.scrollIntoView({block: 'end', behavior: 'auto'});
 });
 
+//set section and navbar as active
+const callback = newEntry => {
+    newEntry.forEach(entry =>{
+        const navBarList = document.querySelector(
+            `.menu__link[data-link='${entry.target.id}']`,
+        )
+        const section = document.getElementById(entry.target.id)
+
+        if(entry && entry.isIntersecting){
+            navBarList.classList.add('active');
+            section.classList.add('active');
+        }else{
+            if(navBarList.classList.contains('active')){
+                navBarList.classList.remove('active');
+            }
+            if(section.classList.contains('active')){
+                section.classList.remove('active')
+            }
+        }
+    })
+}
+
+//Options for the observer
+const options = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.6,
+}
+
+//call back to check if the navbar is active
+const observer = new IntersectionObserver(callback, options);
+navElement.forEach(e => {
+    observer.observe(document.getElementById(e.id));
+});
