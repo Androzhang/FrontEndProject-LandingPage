@@ -1,73 +1,65 @@
 /**
- * 
+ *
  * Manipulating the DOM exercise.
  * Exercise programmatically builds navigation,
  * scrolls to anchors from navigation,
  * and highlights section in viewport upon scrolling.
- * 
+ *
  * Dependencies: None
- * 
+ *
  * JS Version: ES2015/ES6
- * 
+ *
  * JS Standard: ESlint
- * 
+ *
 */
 
 /**
  * Define Global Variables
- * 
+ * select all selections in order to create the nav bar dynamically
+ * find the navBar
 */
-const navElement = document.querySelectorAll('section');
-const navBar = document.getElementById('navbar__list');
+const navSection = document.querySelectorAll('section');
+const navBar = document.querySelector('#navbar__list');
 
 // build the nav
-navElement.forEach (function(e) {
-   const navbarItem = 
-   `<li class='menu__link ${e.className}' data-link=${e.id}> 
-     <a href="#${e.id}">  ${e.dataset.nav}  </li>`;
-    navBar.insertAdjacentHTML('beforeend',navbarItem);
+navSection.forEach (function(sectionData) {
+  // DEBUG:
+  //debugger;
+  //get section data and create a
+  var navbarA= document.createElement('a');
+  navbarA.setAttribute("href", "#" + sectionData.id);
+  navbarA.setAttribute("class", sectionData.className);
+  navbarA.textContent = sectionData.dataset.nav;
+  //navbarA.addEventListener('click', respondToTheClick);
+  //get section data and create li
+  var navbarLi= document.createElement('li');
+  navbarLi.setAttribute("data-link", sectionData.id);
+  //append a to li
+  navbarLi.appendChild(navbarA);
+  //append li to nav ul
+  navBar.appendChild(navbarLi);
 });
 
-// Scroll to section on link click
-navBar.addEventListener('click',function(l) {
-    l.preventDefault();
-    const parent = l.target.hasAttribute('data-link')? 
-        l.target: l.target.parentElement;
-    const elementToScrollTo = document.getElementById(parent.dataset.link);
-    elementToScrollTo.scrollIntoView({block: 'end', behavior: 'auto'});
-});
-
-//set section and navbar as active
-const callback = newEntry => {
-    newEntry.forEach(entry =>{
-        const navBarList = document.querySelector(
-            `.menu__link[data-link='${entry.target.id}']`,
-        )
-        const section = document.getElementById(entry.target.id)
-
-        if(entry && entry.isIntersecting){
-            navBarList.classList.add('active');
-            section.classList.add('active');
-        }else{
-            if(navBarList.classList.contains('active')){
-                navBarList.classList.remove('active');
-            }
-            if(section.classList.contains('active')){
-                section.classList.remove('active')
-            }
-        }
-    })
-}
-
-//Options for the observer
-const options = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.6,
-}
-
-//call back to check if the navbar is active
-const observer = new IntersectionObserver(callback, options);
-navElement.forEach(e => {
-    observer.observe(document.getElementById(e.id));
+// function respondToTheClick(e) {
+//   if (document.querySelector('#navbar__list a.active') !== null) {
+//     document.querySelector('#navbar__list a.active').classList.remove('active');
+//   }
+//   e.target.className = "active";
+// }
+// Add class 'active' to section when near top of viewport
+window.addEventListener("scroll", function (e){
+  //debugger;
+  var fromTop = window.scrollY;
+  //debugger;
+  var NavLinks = document.querySelectorAll("nav li a");
+  NavLinks.forEach(function (a){
+    var section = document.querySelector(a.hash);
+    if (section.offsetTop <= fromTop + 1 && section.offsetTop + section.offsetHeight - 1 > fromTop) {
+      a.classList.add("active");
+      section.classList.add("active");
+    } else {
+      a.classList.remove("active");
+      section.classList.remove("active");
+    }
+  });
 });
